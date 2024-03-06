@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_app/quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
+QuizBrain quizBrain = QuizBrain();
 
 void main() {
   runApp(const MyApp());
@@ -10,6 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.grey.shade900,
         body: const SafeArea(
@@ -32,26 +37,30 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
-  List<String> questions = [
-    'Flutter is developed by Google for building natively compiled apps for mobile, web, and desktop from one codebase.',
-    'Flutter is a primarily web-focused framework developed by Apple.',
-    'Widgets in Flutter are rebuilt entirely when their state changes.',
-    'Widgets in Flutter are mutable, allowing developers to change their properties after creation.',
-    'Flutter requires separate codebases for Android and iOS app development.',
-    'Flutter does not support the development of desktop applications.',
-    'Hot Reload in Flutter instantly shows code changes in the running app without restarting',
-  ];
-  List<bool> answers = [
-    true,
-    false,
-    true,
-    true,
-    false,
-    false,
-    true,
-  ];
 
-  int questionNum = 0;
+  void checkAnswer(bool userPickedAnswer) {
+    bool correctAnswer = quizBrain.getQuestionAnswer();
+    setState(() {
+      //TODO: Step 4 - Use IF/ELSE to check if we've reached the end of the quiz. If true, execute Part A, B, C, D.
+      //TODO: Step 4 Part A - show an alert using rFlutter_alert (remember to read the docs for the package!)
+      //HINT! Step 4 Part B is in the quiz_brain.dart
+      //TODO: Step 4 Part C - reset the questionNumber,
+      //TODO: Step 4 Part D - empty out the scoreKeeper.
+      //TODO: Step 5 - If we've not reached the end, ELSE do the answer checking steps below 👇
+
+      if (userPickedAnswer == correctAnswer) {
+        scoreKeeper.add(
+          Icon(Icons.check, color: Colors.green),
+        );
+      } else {
+        scoreKeeper.add(
+          Icon(Icons.remove, color: Colors.red),
+        );
+      }
+
+      quizBrain.nextQuestion();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +72,7 @@ class _QuizPageState extends State<QuizPage> {
           flex: 5,
           child: Center(
             child: Text(
-              questions[questionNum],
+              quizBrain.getQuestionText(),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Colors.white,
@@ -81,11 +90,7 @@ class _QuizPageState extends State<QuizPage> {
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
-                bool correctAnswer = answers[questionNum];
-
-                setState(() {
-                  questionNum++;
-                });
+                checkAnswer(true);
               },
               child: const Text('True'),
             ),
@@ -100,9 +105,7 @@ class _QuizPageState extends State<QuizPage> {
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
-                setState(() {
-                  questionNum++;
-                });
+                checkAnswer(false);
               },
               child: const Text('False'),
             ),
